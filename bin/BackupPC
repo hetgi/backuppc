@@ -116,7 +116,8 @@ if ( $BackupPC::XS::VERSION < $PackageVersion->{'BackupPC::XS'} ) {
     exit(1);
 }
 if ( $Conf{RsyncBackupPCPath} ne "" && -x $Conf{RsyncBackupPCPath} ) {
-    my $output = $bpc->cmdSystemOrEval([$Conf{RsyncBackupPCPath}, "--version"]);
+#   my $output = $bpc->cmdSystemOrEval([$Conf{RsyncBackupPCPath}, "--version"]);
+    my $output = $bpc->cmdSystemOrEval([$Conf{RsyncBackupPCPath}, "--bpc-top-dir='/var/lib/BackupPC/'", "--bpc-share-name='/'", "--bpc-host-name='dummy'", "--bpc-bkup-num=0", "--version"]);
     if ( $? ) {
         print(STDERR
               "BackupPC: can't run $Conf{RsyncBackupPCPath} for rsync_bpc version check; ($output) exiting in 30s\n");
@@ -124,7 +125,7 @@ if ( $Conf{RsyncBackupPCPath} ne "" && -x $Conf{RsyncBackupPCPath} ) {
         exit(1);
     }
     my $version = "unknown";
-    $version = $1 if ( $output =~ /rsync_bpc\s+version\s+([\d.]+?)(\.?beta\d+)?\s+protocol/ );
+    $version = $1 if ( $output =~ /rsync_bpc\s+version\s+([\d.]+?)(\.?(beta|rc)\d+)?\s+protocol/ );
     if ( $version eq "unknown" || version->parse($version) < version->parse($PackageVersion->{rsync_bpc}) ) {
         print(STDERR
               "BackupPC: rsync_bpc at $Conf{RsyncBackupPCPath} needs to be upgraded (got version $version; need >= $PackageVersion->{rsync_bpc}); exiting in 30s\n"
